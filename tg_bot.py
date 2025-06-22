@@ -1,13 +1,18 @@
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from environs import Env
 from telegram import Update
 from telegram.ext import CallbackContext
-
 import os
-from environs import Env
+
 from google.cloud import dialogflow_v2 as dialogflow
+
 
 
 env = Env()
 env.read_env()
+
+bot_token = env.str('BOT_TOKEN')
+
 PROJECT_ID = env.str("PROJECT_ID")
 
 credentials_file_name = env.str("GOOGLE_APPLICATION_CREDENTIALS")
@@ -53,3 +58,24 @@ def echo(update: Update, context: CallbackContext) -> None:
         update.message.reply_text(dialogflow_response)
     else:
         update.message.reply_text("Извините, я не смог понять ваш запрос. Пожалуйста, попробуйте еще раз.")
+
+
+def main():
+    if not bot_token:
+        print("Ошибка: BOT_TOKEN не найден. Убедитесь, что он указан в .env файле или как системная переменная.")
+        return
+
+    updater = Updater(bot_token, use_context=True)
+
+    dispatcher = updater.dispatcher
+    dispatcher.add_handler(CommandHandler("start", start))
+
+    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
+
+    print("Бот запущен! Отправьте ему /start или любое сообщение.")
+    updater.start_polling()
+
+    updater.idle()
+
+if __name__ == '__main__':
+    main()
