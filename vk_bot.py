@@ -1,29 +1,21 @@
-import os
 import random
 import json
 from environs import Env
 import vk_api
 from vk_api.longpoll import VkLongPoll, VkEventType
-from google.cloud import dialogflow_v2 as dialogflow
+from dialogflow_utils import detect_intent_texts
+
 
 env = Env()
 env.read_env()
 
 VK_TOKEN = env.str("VK_TOKEN")
-PROJECT_ID = env.str("PROJECT_ID")
 
-# vk_session = vk_api.VkApi(token=VK_TOKEN)
-# longpoll = VkLongPoll(vk_session)
-credentials_file_name = env.str("GOOGLE_APPLICATION_CREDENTIALS")
-credentials_path = os.path.join(os.getcwd(), credentials_file_name)
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
-PARENT_PATH = dialogflow.AgentsClient.agent_path(PROJECT_ID)
-
-def echo(event, vk_api_instance):
+def send_vk_message(vk_api_instance, user_id, message_text):
     vk_api_instance.messages.send(
-        user_id=event.user_id,
-        message=event.text,
-        random_id=random.randint(1, 1000000)
+        user_id=user_id,
+        message=message_text,
+        random_id=random.randint(1, 1000000) # random_id обязателен для VK API
     )
 
 def run_vk_bot():
@@ -39,15 +31,19 @@ def run_vk_bot():
 
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me:
-            print('Новое сообщение:')
-            if event.to_me:
-                print('Для меня от: ', event.user_id)
-            else:
-                print('От меня для: ', event.user_id)
-            print('Текст:', event.text)
+            user_id = event.user_id
+            user_text = event.text
+            print(f'Новое сообщение от {user_id}: {user_text}')
 
-            # Вызываем функцию echo, чтобы бот ответил
-            echo(event, vk_api_instance)
+            dialogflow_response = detect_intent_texts(str(user_id), user_text, "ru")
+
+            if dialogflow_response:
+                send_vk_message(vk_api_instance, user_id, dialogflow_response)
+                print(f'Отправлен ответ Dialogflow пользователю {user_id}: {dialogflow_response}')
+            else:
+                fallback_message = "Извините, я не смог понять ваш запрос. Пожалуйста, попробуйте еще раз."
+                send_vk_message(vk_api_instance, user_id, fallback_message)
+                print(f'Отправлен запасной ответ пользователю {user_id}: {fallback_message}')
 
 if __name__ == '__main__':
     run_vk_bot()
