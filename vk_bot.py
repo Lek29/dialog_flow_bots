@@ -15,7 +15,7 @@ def send_vk_message(vk_api_instance, user_id, message_text):
     vk_api_instance.messages.send(
         user_id=user_id,
         message=message_text,
-        random_id=random.randint(1, 1000000) # random_id обязателен для VK API
+        random_id=random.randint(1, 1000000)
     )
 
 def run_vk_bot():
@@ -35,15 +35,18 @@ def run_vk_bot():
             user_text = event.text
             print(f'Новое сообщение от {user_id}: {user_text}')
 
-            dialogflow_response = detect_intent_texts(str(user_id), user_text, "ru")
+            query_result = detect_intent_texts(str(user_id), user_text, "ru")
 
-            if dialogflow_response:
-                send_vk_message(vk_api_instance, user_id, dialogflow_response)
-                print(f'Отправлен ответ Dialogflow пользователю {user_id}: {dialogflow_response}')
+            if query_result:
+                if query_result.intent.is_fallback:
+                    print(f'Dialogflow не понял запрос от {user_id}. Бот молчит, передавая управление оператору.')
+                else:
+                    dialogflow_response_text = query_result.fulfillment_text
+                    send_vk_message(vk_api_instance, user_id, dialogflow_response_text)
+                    print(f'Отправлен ответ Dialogflow пользователю {user_id}: {dialogflow_response_text}')
             else:
-                fallback_message = "Извините, я не смог понять ваш запрос. Пожалуйста, попробуйте еще раз."
-                send_vk_message(vk_api_instance, user_id, fallback_message)
-                print(f'Отправлен запасной ответ пользователю {user_id}: {fallback_message}')
+                print(f'Произошла ошибка при обращении к Dialogflow API для {user_id}. Бот молчит.')
+
 
 if __name__ == '__main__':
     run_vk_bot()

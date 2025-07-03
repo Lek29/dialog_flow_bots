@@ -22,10 +22,11 @@ def echo(update: Update, context: CallbackContext) -> None:
     user_text = update.message.text
     telegram_user_id = str(update.message.from_user.id)
 
-    dialogflow_response = detect_intent_texts(telegram_user_id, user_text, "ru")
+    query_result = detect_intent_texts(telegram_user_id, user_text, "ru")
 
-    if dialogflow_response:
-        update.message.reply_text(dialogflow_response)
+    if query_result:
+        dialogflow_response_text = query_result.fulfillment_text
+        update.message.reply_text(dialogflow_response_text)
     else:
         update.message.reply_text("Извините, я не смог понять ваш запрос. Пожалуйста, попробуйте еще раз.")
 

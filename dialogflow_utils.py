@@ -37,7 +37,7 @@ def detect_intent_texts(session_id, text, language_code='ru-RU'):
         response = session_client.detect_intent(
             request={"session": session, "query_input": query_input}
         )
-        return response.query_result.fulfillment_text
+        return response.query_result
     except Exception as e:
         print(f"Ошибка при обращении к Dialogflow API: {e}")
         return None
