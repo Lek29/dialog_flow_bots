@@ -24,7 +24,8 @@ def detect_intent_texts(session_id, text, language_code='ru-RU'):
         language_code (str): Код языка (например, 'ru-RU' для русского).
 
     Returns:
-        str: Ответ из Dialogflow (fulfillment_text) или None, если произошла ошибка.
+         google.cloud.dialogflow_v2.types.QueryResult: Объект QueryResult из Dialogflow,
+                                                       или None, если произошла ошибка API.
     """
 
     session_client = dialogflow.SessionsClient()
