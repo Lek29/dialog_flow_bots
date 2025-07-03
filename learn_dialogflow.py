@@ -15,6 +15,23 @@ os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
 PARENT_PATH = dialogflow.AgentsClient.agent_path(PROJECT_ID)
 
 def create_intent(project_id, display_name, training_phrases_parts, message_texts):
+    """Создает новый интент (намерение) в Dialogflow.
+
+        Этот интент будет содержать указанные тренировочные фразы и текстовые ответы.
+
+        Args:
+            project_id (str): ID проекта Google Cloud, где находится Dialogflow агент.
+            display_name (str): Отображаемое имя интента в консоли Dialogflow.
+            training_phrases_parts (list[str]): Список строк, которые будут
+                использованы как тренировочные фразы для данного интента.
+            message_texts (list[str]): Список строк, которые будут
+                использованы как текстовые ответы (fulfillment messages) для данного интента.
+                (В текущей реализации ожидается список из одной строки).
+
+        Returns:
+            None: Функция ничего не возвращает, но выводит информацию о создании
+                или ошибке в консоль.
+    """
     intents_client = dialogflow.IntentsClient()
 
     training_phrases = []
@@ -45,6 +62,14 @@ def create_intent(project_id, display_name, training_phrases_parts, message_text
 
 
 if __name__ == '__main__':
+    """Основная точка входа для создания интентов Dialogflow из файла JSON.
+
+       Загружает вопросы и ответы из 'questions.json' и использует их для
+       создания или обновления интентов в указанном проекте Dialogflow.
+
+       Ожидает наличие файла 'questions.json' в корневой директории
+       и корректно настроенных переменных окружения (.env).
+    """
     try:
         with open('questions.json', 'r', encoding='utf-8') as f:
             questions_data = json.load(f)

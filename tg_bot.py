@@ -33,7 +33,6 @@ def echo(update: Update, context: CallbackContext) -> None:
 
 def main():
     if not bot_token:
-        print("Ошибка: BOT_TOKEN не найден. Убедитесь, что он указан в .env файле или как системная переменная.")
         return
 
     updater = Updater(bot_token, use_context=True)
@@ -43,7 +42,6 @@ def main():
 
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
 
-    print("Бот запущен! Отправьте ему /start или любое сообщение.")
     updater.start_polling()
 
     updater.idle()
