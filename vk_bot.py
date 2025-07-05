@@ -43,7 +43,3 @@ def run_vk_bot():
                     send_vk_message(vk_api_instance, user_id, dialogflow_response_text)
             else:
                 pass
-
-
-if __name__ == '__main__':
-    run_vk_bot()
