@@ -35,4 +35,3 @@ def send_dev_alert(message: str):
             logger.error(f"Не удалось отправить уведомление в Telegram чат {DEVELOPER_CHAT_ID}: {e}")
     else:
         logger.error("Невозможно отправить уведомление: Notifier Bot не инициализирован или DEVELOPER_CHAT_ID не указан.")
-

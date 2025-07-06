@@ -31,7 +31,7 @@ def echo(update: Update, context: CallbackContext) -> None:
         update.message.reply_text("Извините, я не смог понять ваш запрос. Пожалуйста, попробуйте еще раз.")
 
 
-def main():
+def run_tg_bot():
     if not bot_token:
         return
 
@@ -46,5 +46,3 @@ def main():
 
     updater.idle()
 
-if __name__ == '__main__':
-    main()
