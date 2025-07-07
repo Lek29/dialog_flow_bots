@@ -31,4 +31,3 @@ if __name__ == '__main__':
     threading.Thread(target=run_vk_bot, daemon=True).start()
     logger.info("Оба бота запущены в отдельных потоках.")
 
-    threading.main_thread().join()
