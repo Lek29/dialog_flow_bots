@@ -1,17 +1,19 @@
 import os
+
 from environs import Env
 from google.cloud import dialogflow_v2 as dialogflow
 
 env = Env()
 env.read_env()
 
-PROJECT_ID = env.str("PROJECT_ID")
-credentials_file_name = env.str("GOOGLE_APPLICATION_CREDENTIALS")
+PROJECT_ID = env.str('PROJECT_ID')
+credentials_file_name = env.str('GOOGLE_APPLICATION_CREDENTIALS')
 credentials_path = os.path.join(os.getcwd(), credentials_file_name)
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
 
 PARENT_PATH = dialogflow.AgentsClient.agent_path(PROJECT_ID)
+
 
 def detect_intent_texts(session_id, text, language_code='ru-RU'):
     """
@@ -36,8 +38,8 @@ def detect_intent_texts(session_id, text, language_code='ru-RU'):
 
     try:
         response = session_client.detect_intent(
-            request={"session": session, "query_input": query_input}
+            request={'session': session, 'query_input': query_input}
         )
         return response.query_result
-    except Exception as e:
+    except Exception:
         return None

@@ -1,18 +1,20 @@
-import os
 import json
+import os
+
 from environs import Env
 from google.cloud import dialogflow_v2 as dialogflow
 
 env = Env()
 env.read_env()
 
-PROJECT_ID = env.str("PROJECT_ID")
+PROJECT_ID = env.str('PROJECT_ID')
 
-credentials_file_name = env.str("GOOGLE_APPLICATION_CREDENTIALS")
+credentials_file_name = env.str('GOOGLE_APPLICATION_CREDENTIALS')
 credentials_path = os.path.join(os.getcwd(), credentials_file_name)
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
 
 PARENT_PATH = dialogflow.AgentsClient.agent_path(PROJECT_ID)
+
 
 def create_intent(project_id, display_name, training_phrases_parts, message_texts):
     """Создает новый интент (намерение) в Dialogflow.
@@ -53,12 +55,11 @@ def create_intent(project_id, display_name, training_phrases_parts, message_text
 
     try:
         response = intents_client.create_intent(
-            request={"parent": PARENT_PATH, "intent": intent}
+            request={'parent': PARENT_PATH, 'intent': intent}
         )
-        print(f"Интент '{response.display_name}' успешно создан. ID: {response.name}")
+        print(f'Интент "{response.display_name}" успешно создан. ID: {response.name}')
     except Exception as e:
-        print(f"Ошибка при создании интента '{display_name}': {e}")
-
+        print(f'Ошибка при создании интента "{display_name}": {e}')
 
 
 if __name__ == '__main__':
@@ -74,14 +75,13 @@ if __name__ == '__main__':
         with open('questions.json', 'r', encoding='utf-8') as f:
             questions_data = json.load(f)
     except FileNotFoundError:
-        print("Ошибка: Файл 'questions.json' не найден.")
+        print('Ошибка: Файл "questions.json" не найден.')
         exit()
     except json.JSONDecodeError:
-        print("Ошибка: Файл 'questions.json' содержит некорректный формат JSON.")
+        print('Ошибка: Файл "questions.json" содержит некорректный формат JSON.')
         exit()
 
-    print("Начинаем создание интентов в Dialogflow...")
-
+    print('Начинаем создание интентов в Dialogflow...')
 
     for intent_name, data in questions_data.items():
         print(f"\nСоздаем интент: '{intent_name}'")
@@ -92,5 +92,4 @@ if __name__ == '__main__':
             [data['answer']]
         )
 
-    print("\nПроцесс создания интентов завершен.")
-
+    print('\nПроцесс создания интентов завершен.')
