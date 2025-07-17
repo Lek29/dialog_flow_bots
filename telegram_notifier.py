@@ -12,13 +12,21 @@ TELEGRAM_NOTIFIER_TOKEN = env.str('BOT_TOKEN')
 
 DEVELOPER_CHAT_ID = env.str('DEVELOPER_CHAT_ID', None)
 
-if not DEVELOPER_CHAT_ID:
-    logger.warning('DEVELOPER_CHAT_ID не установлен в .env. Уведомления об ошибках не будут отправляться.')
-else:
-    logger.info(f'Telegram-уведомления будут отправляться в чат с ID: {DEVELOPER_CHAT_ID}')
-
 _notifier_bot = None
-if TELEGRAM_NOTIFIER_TOKEN:
+
+
+def _initialize_notifier_bot():
+    global _notifier_bot
+
+    if not TELEGRAM_NOTIFIER_TOKEN:
+        logger.warning(
+            'TELEGRAM_DEV_ALERT_BOT_TOKEN не установлен в .env. Уведомления об ошибках не будут отправляться.')
+        return
+
+    if not DEVELOPER_CHAT_ID:
+        logger.warning('TELEGRAM_DEV_ALERT_CHAT_ID не установлен в .env. Уведомления об ошибках не будут отправляться.')
+        return
+
     try:
         _notifier_bot = Bot(token=TELEGRAM_NOTIFIER_TOKEN)
         logger.info('Notifier Bot успешно инициализирован.')
@@ -26,9 +34,7 @@ if TELEGRAM_NOTIFIER_TOKEN:
         logger.error(f'Ошибка при инициализации Notifier Bot: {e}')
         _notifier_bot = None
 
-
 def send_dev_alert(message: str):
-    """Отправляет уведомление разработчику в указанный Telegram-чат."""
     if _notifier_bot and DEVELOPER_CHAT_ID:
         try:
             _notifier_bot.send_message(chat_id=DEVELOPER_CHAT_ID, text=message)
@@ -38,3 +44,6 @@ def send_dev_alert(message: str):
     else:
         logger.error(
             'Невозможно отправить уведомление: Notifier Bot не инициализирован или DEVELOPER_CHAT_ID не указан.')
+
+
+_initialize_notifier_bot()

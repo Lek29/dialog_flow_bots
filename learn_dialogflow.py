@@ -62,15 +62,15 @@ def create_intent(project_id, display_name, training_phrases_parts, message_text
         print(f'Ошибка при создании интента "{display_name}": {e}')
 
 
-if __name__ == '__main__':
+def main():
     """Основная точка входа для создания интентов Dialogflow из файла JSON.
 
-       Загружает вопросы и ответы из 'questions.json' и использует их для
-       создания или обновления интентов в указанном проекте Dialogflow.
+           Загружает вопросы и ответы из 'questions.json' и использует их для
+           создания или обновления интентов в указанном проекте Dialogflow.
 
-       Ожидает наличие файла 'questions.json' в корневой директории
-       и корректно настроенных переменных окружения (.env).
-    """
+           Ожидает наличие файла 'questions.json' в корневой директории
+           и корректно настроенных переменных окружения (.env).
+        """
     try:
         with open('questions.json', 'r', encoding='utf-8') as f:
             questions_data = json.load(f)
@@ -93,3 +93,7 @@ if __name__ == '__main__':
         )
 
     print('\nПроцесс создания интентов завершен.')
+
+
+if __name__ == '__main__':
+    main()

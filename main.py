@@ -27,7 +27,7 @@ def handle_exception(exc_type, exc_value, exc_traceback):
     sys.excepthook = handle_exception
 
 
-if __name__ == '__main__':
+def main():
     logger.info('Запуск ботов...')
     telegram_thread = threading.Thread(target=run_tg_bot, daemon=True)
     vk_thread = threading.Thread(target=run_vk_bot, daemon=True)
@@ -40,3 +40,7 @@ if __name__ == '__main__':
             time.sleep(1)
     except KeyboardInterrupt:
         logger.info('Главный поток остановлен вручную. Завершение работы ботов.')
+
+
+if __name__ == '__main__':
+    main()
