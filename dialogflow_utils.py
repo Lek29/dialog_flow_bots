@@ -36,10 +36,7 @@ def detect_intent_texts(session_id, text, language_code='ru-RU'):
     text_input = dialogflow.TextInput(text=text, language_code=language_code)
     query_input = dialogflow.QueryInput(text=text_input)
 
-    try:
-        response = session_client.detect_intent(
-            request={'session': session, 'query_input': query_input}
-        )
-        return response.query_result
-    except Exception:
-        return None
+    response = session_client.detect_intent(
+        request={'session': session, 'query_input': query_input}
+    )
+    return response.query_result
