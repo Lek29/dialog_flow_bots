@@ -80,14 +80,16 @@ def main():
     print('Начинаем создание интентов в Dialogflow...')
 
     for intent_name, data in questions_data.items():
-        print(f"\nСоздаем интент: '{intent_name}'")
-        create_intent(
-            PROJECT_ID,
-            intent_name,
-            data['questions'],
-            [data['answer']]
-        )
-
+        try:
+            print(f"\nСоздаем интент: '{intent_name}'")
+            create_intent(
+                PROJECT_ID,
+                intent_name,
+                data['questions'],
+                [data['answer']]
+            )
+        except Exception as e:
+            print(f'Ошибка при создании интента "{intent_name}": {e}')
     print('\nПроцесс создания интентов завершен.')
 
 
