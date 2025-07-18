@@ -53,14 +53,10 @@ def create_intent(project_id, display_name, training_phrases_parts, message_text
         messages=[message],
     )
 
-    try:
-        response = intents_client.create_intent(
+    response = intents_client.create_intent(
             request={'parent': PARENT_PATH, 'intent': intent}
         )
-        print(f'Интент "{response.display_name}" успешно создан. ID: {response.name}')
-    except Exception as e:
-        print(f'Ошибка при создании интента "{display_name}": {e}')
-
+    return response
 
 def main():
     """Основная точка входа для создания интентов Dialogflow из файла JSON.
