@@ -57,16 +57,16 @@ def run_vk_bot():
                 try:
                     query_result = detect_intent_texts(str(user_id), user_text, 'ru')
 
-                    if query_result:
-                        if query_result.intent.is_fallback:
-                            logger.info(f'VK-бот: Dialogflow fallback для {user_id}. Текст: {user_text}')
-                        else:
-                            dialogflow_response_text = query_result.fulfillment_text
-                            send_vk_message(vk_api_instance, user_id, dialogflow_response_text)
-                            logger.info(
-                                f'Отправлен ответ Dialogflow пользователю {user_id}: {dialogflow_response_text[:50]}...')
+
+                    if query_result.intent.is_fallback:
+                        logger.info(f'VK-бот: Dialogflow fallback для {user_id}. Текст: {user_text}')
                     else:
-                        logger.warning(f'VK-бот: Dialogflow не вернул результат для {user_id}: {user_text}')
+                        dialogflow_response_text = query_result.fulfillment_text
+
+                        logger.info(
+                            f'Отправлен ответ Dialogflow пользователю {user_id}: {dialogflow_response_text[:50]}...')
+
+                    send_vk_message(vk_api_instance, user_id, dialogflow_response_text)
 
                 except Exception as e:
                     logger.critical(f'VK-бот: Ошибка Dialogflow или обработки сообщения для {user_id}: {e}', exc_info=True)

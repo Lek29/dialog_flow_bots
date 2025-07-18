@@ -32,18 +32,15 @@ def handle_message(update: Update, context: CallbackContext) -> None:
     try:
         query_result = detect_intent_texts(str(user_id), user_text, 'ru')
 
-        if query_result:
-            if query_result.intent.is_fallback:
-                dialogflow_response_text = 'Извините, я не понял ваш запрос. Пожалуйста, попробуйте еще раз.'
-                logger.info(f'Telegram-бот: Dialogflow fallback для {user_id}. Текст: {user_text}')
-            else:
-                dialogflow_response_text = query_result.fulfillment_text
-                logger.info(
-                    f'Telegram-бот: Отправлен ответ Dialogflow пользователю {user_id}: {dialogflow_response_text[:50]}...')
-
-            update.message.reply_text(dialogflow_response_text)
+        if query_result.intent.is_fallback:
+            dialogflow_response_text = 'Извините, я не понял ваш запрос. Пожалуйста, попробуйте еще раз.'
+            logger.info(f'Telegram-бот: Dialogflow fallback для {user_id}. Текст: {user_text}')
         else:
-            update.message.reply_text('Извините, я не смог понять ваш запрос. Пожалуйста, попробуйте еще раз.')
+            dialogflow_response_text = query_result.fulfillment_text
+            logger.info(
+                f'Telegram-бот: Отправлен ответ Dialogflow пользователю {user_id}: {dialogflow_response_text[:50]}...')
+
+        update.message.reply_text(dialogflow_response_text)
 
     except Exception as e:
         logger.critical(f'Telegram-бот: Ошибка Dialogflow или обработки сообщения для {user_id}: {e}', exc_info=True)
