@@ -35,11 +35,16 @@ def main():
     telegram_thread.start()
     vk_thread.start()
     logger.info('Оба бота запущены в отдельных потоках.')
+
+
     try:
-        while True:
-            time.sleep(1)
+        telegram_thread.join()
+        vk_thread.join()
     except KeyboardInterrupt:
         logger.info('Главный поток остановлен вручную. Завершение работы ботов.')
+    except Exception as e:
+        logger.critical(f'Неожиданная ошибка в главном потоке: {e}', exc_info=True)
+        send_dev_alert(f'Неожиданная ошибка в главном потоке: {e}')
 
 
 if __name__ == '__main__':
