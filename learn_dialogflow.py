@@ -72,10 +72,10 @@ def main():
             questions_data = json.load(f)
     except FileNotFoundError:
         print('Ошибка: Файл "questions.json" не найден.')
-        exit()
+        raise
     except json.JSONDecodeError:
         print('Ошибка: Файл "questions.json" содержит некорректный формат JSON.')
-        exit()
+        raise
 
     print('Начинаем создание интентов в Dialogflow...')
 
