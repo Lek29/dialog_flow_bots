@@ -10,10 +10,7 @@ from telegram_notifier import send_dev_alert
 
 logger = logging.getLogger(__name__)
 
-env = Env()
-env.read_env()
 
-TELEGRAM_TOKEN = env.str('BOT_TOKEN')
 
 
 def start(update: Update, context: CallbackContext) -> None:
@@ -55,6 +52,11 @@ def error_handler(update: object, context: CallbackContext) -> None:
 
 
 def run_tg_bot():
+    env = Env()
+    env.read_env()
+
+    TELEGRAM_TOKEN = env.str('BOT_TOKEN')
+
     if not TELEGRAM_TOKEN:
         logger.error('TELEGRAM_TOKEN не установлен в .env. Telegram-бот не будет работать.')
 
@@ -72,3 +74,7 @@ def run_tg_bot():
 
     updater.start_polling()
     logger.info('Telegram-бот запущен и получает обновления.')
+
+
+if __name__ == '__main__':
+    run_tg_bot()
