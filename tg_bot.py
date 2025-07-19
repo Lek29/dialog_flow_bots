@@ -11,8 +11,6 @@ from telegram_notifier import send_dev_alert
 logger = logging.getLogger(__name__)
 
 
-
-
 def start(update: Update, context: CallbackContext) -> None:
     user = update.effective_user
     update.message.reply_html(

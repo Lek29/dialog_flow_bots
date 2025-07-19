@@ -8,12 +8,8 @@ from vk_api.longpoll import VkEventType, VkLongPoll
 from dialogflow_utils import detect_intent_texts
 from telegram_notifier import send_dev_alert
 
+
 logger = logging.getLogger(__name__)
-
-env = Env()
-env.read_env()
-
-VK_TOKEN = env.str('VK_TOKEN')
 
 
 def send_vk_message(vk_api_instance, user_id, message_text):
@@ -33,6 +29,11 @@ def send_vk_message(vk_api_instance, user_id, message_text):
 
 
 def run_vk_bot():
+    env = Env()
+    env.read_env()
+
+    VK_TOKEN = env.str('VK_TOKEN')
+
     if not VK_TOKEN:
         logger.error('Ошибка: VK_TOKEN не найден. Убедитесь, что он указан в .env файле.')
         send_dev_alert('VK-бот: VK_TOKEN не найден. Бот не запущен.')
@@ -79,3 +80,7 @@ def run_vk_bot():
     except Exception as e:
         logger.critical(f'VK-бот: Неожиданная ошибка при запуске VK-бота: {e}', exc_info=True)
         send_dev_alert(f'VK-бот: Неожиданная критическая ошибка при запуске!\n\n```\n{e}\n```')
+
+
+if __name__ == '__main__':
+    run_vk_bot()
