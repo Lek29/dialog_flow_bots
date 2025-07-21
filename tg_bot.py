@@ -25,7 +25,7 @@ def handle_message(update: Update, context: CallbackContext) -> None:
     logger.info(f'Telegram-бот: Новое сообщение от {user_id}: "{user_text}"')
 
     try:
-        query_result = detect_intent_texts(str(user_id), user_text, 'ru')
+        query_result = detect_intent_texts(f'tg-{user_id}', user_text, 'ru')
 
         if query_result.intent.is_fallback:
             dialogflow_response_text = 'Извините, я не понял ваш запрос. Пожалуйста, попробуйте еще раз.'

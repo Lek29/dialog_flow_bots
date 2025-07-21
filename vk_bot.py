@@ -61,7 +61,7 @@ def run_vk_bot():
             dialogflow_response_text = 'Извините, я не понял ваш запрос. Пожалуйста, попробуйте еще раз.'
 
             try:
-                query_result = detect_intent_texts(str(user_id), user_text, 'ru')
+                query_result = detect_intent_texts(f'vk-{user_id}', user_text, 'ru')
 
                 if not query_result:
                     logger.warning(f'VK-бот: Dialogflow не вернул результат для {user_id}: {user_text}')
