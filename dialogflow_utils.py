@@ -3,17 +3,6 @@ import os
 from environs import Env
 from google.cloud import dialogflow_v2 as dialogflow
 
-env = Env()
-env.read_env()
-
-PROJECT_ID = env.str('PROJECT_ID')
-credentials_file_name = env.str('GOOGLE_APPLICATION_CREDENTIALS')
-credentials_path = os.path.join(os.getcwd(), credentials_file_name)
-
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
-
-PARENT_PATH = dialogflow.AgentsClient.agent_path(PROJECT_ID)
-
 
 def detect_intent_texts(session_id, text, language_code='ru-RU'):
     """
@@ -30,6 +19,16 @@ def detect_intent_texts(session_id, text, language_code='ru-RU'):
                                                        или None, если произошла ошибка API.
     """
 
+    env = Env()
+    env.read_env()
+
+    PROJECT_ID = env.str('PROJECT_ID')
+    credentials_file_name = env.str('GOOGLE_APPLICATION_CREDENTIALS')
+    credentials_path = os.path.join(os.getcwd(), credentials_file_name)
+
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
+
+
     session_client = dialogflow.SessionsClient()
     session = session_client.session_path(PROJECT_ID, session_id)
 
@@ -40,3 +39,7 @@ def detect_intent_texts(session_id, text, language_code='ru-RU'):
         request={'session': session, 'query_input': query_input}
     )
     return response.query_result
+
+
+if __name__ == '__main__':
+    detect_intent_texts()
