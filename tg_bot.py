@@ -53,16 +53,16 @@ def run_tg_bot():
     env = Env()
     env.read_env()
 
-    TELEGRAM_TOKEN = env.str('BOT_TOKEN')
+    telegram_token = env.str('BOT_TOKEN')
 
-    if not TELEGRAM_TOKEN:
-        logger.error('TELEGRAM_TOKEN не установлен в .env. Telegram-бот не будет работать.')
+    if not telegram_token:
+        logger.error('telegram_token не установлен в .env. Telegram-бот не будет работать.')
 
-        send_dev_alert('Telegram-бот: TELEGRAM_TOKEN не установлен в .env. Бот не запущен.')
+        send_dev_alert('Telegram-бот: telegram_token не установлен в .env. Бот не запущен.')
         return
 
     logger.info('Telegram-бот: Запуск...')
-    updater = Updater(TELEGRAM_TOKEN, use_context=True)
+    updater = Updater(telegram_token, use_context=True)
 
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('start', start))

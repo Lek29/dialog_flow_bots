@@ -31,6 +31,7 @@ def get_notifier_bot_and_chat_id():
         logger.error(f'Ошибка при инициализации Notifier Bot: {e}')
         return None, None
 
+
 def send_dev_alert(message: str):
 
     bot, chat_id = get_notifier_bot_and_chat_id()
