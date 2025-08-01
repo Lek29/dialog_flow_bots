@@ -7,7 +7,6 @@ from telegram_notifier import send_dev_alert
 from tg_bot import run_tg_bot
 from vk_bot import run_vk_bot
 
-
 logger = logging.getLogger(__name__)
 
 

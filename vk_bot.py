@@ -8,7 +8,6 @@ from vk_api.longpoll import VkEventType, VkLongPoll
 from dialogflow_utils import detect_intent_texts
 from telegram_notifier import send_dev_alert
 
-
 logger = logging.getLogger(__name__)
 
 
