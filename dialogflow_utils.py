@@ -28,7 +28,6 @@ def detect_intent_texts(session_id, text, language_code='ru-RU'):
 
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
 
-
     session_client = dialogflow.SessionsClient()
     session = session_client.session_path(PROJECT_ID, session_id)
 

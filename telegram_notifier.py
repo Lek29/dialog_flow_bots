@@ -53,4 +53,4 @@ if __name__ == '__main__':
         level=logging.INFO
     )
 
-    send_dev_alert("Тестовое уведомление")
+    send_dev_alert('Тестовое уведомление')

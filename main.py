@@ -33,7 +33,6 @@ def main():
     vk_thread.start()
     logger.info('Оба бота запущены в отдельных потоках.')
 
-
     try:
         telegram_thread.join()
         vk_thread.join()

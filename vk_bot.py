@@ -57,7 +57,6 @@ def run_vk_bot():
             user_text = event.text
             logger.info(f'VK-бот: Новое сообщение от {user_id}: "{user_text}"')
 
-
             dialogflow_response_text = 'Извините, я не понял ваш запрос. Пожалуйста, попробуйте еще раз.'
 
             try:
@@ -75,7 +74,7 @@ def run_vk_bot():
                             f'VK-бот: Отправлен ответ Dialogflow пользователю {user_id}: {dialogflow_response_text[:50]}...')
                     else:
                         logger.warning(
-                            f"VK-бот: Dialogflow вернул интент без fulfillment_text для {user_id}. Запрос: {user_text}. Интент: {query_result.intent.display_name}")
+                            f'VK-бот: Dialogflow вернул интент без fulfillment_text для {user_id}. Запрос: {user_text}. Интент: {query_result.intent.display_name}')
 
             except Exception as e:
                 logger.critical(f'VK-бот: Ошибка Dialogflow или обработки сообщения для {user_id}: {e}', exc_info=True)
@@ -83,12 +82,11 @@ def run_vk_bot():
                     f'VK-бот: Критическая ошибка Dialogflow!\n\nОт пользователя {user_id}: "{user_text}"\n\n```\n{e}\n```')
                 dialogflow_response_text = 'Извините, произошла внутренняя ошибка при обработке вашего запроса.'
 
-
             send_vk_message(vk_api_instance, user_id, dialogflow_response_text)
 
     except Exception as e:
-        logger.error(f"VK-бот: Критическая ошибка в цикле прослушивания событий: {e}", exc_info=True)
-        send_dev_alert(f"VK-бот: Критическая ошибка в цикле прослушивания!\nОшибка: {e}")
+        logger.error(f'VK-бот: Критическая ошибка в цикле прослушивания событий: {e}', exc_info=True)
+        send_dev_alert(f'VK-бот: Критическая ошибка в цикле прослушивания!\nОшибка: {e}')
 
     except vk_api.exceptions.ApiError as e:
         logger.critical(f'VK-бот: Критическая ошибка VK API (Long Poll): {e}', exc_info=True)
