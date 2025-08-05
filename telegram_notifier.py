@@ -6,14 +6,7 @@ from telegram import Bot
 logger = logging.getLogger(__name__)
 
 
-def get_notifier_bot_and_chat_id():
-
-    env = Env()
-    env.read_env()
-
-    token = env.str('BOT_TOKEN')
-    chat_id = env.str('DEVELOPER_CHAT_ID', None)
-
+def initialize_bot(token: str, chat_id: str):
     if not token:
         logger.warning(
             'TELEGRAM_DEV_ALERT_BOT_TOKEN не установлен в .env. Уведомления об ошибках не будут отправляться.')
@@ -32,10 +25,7 @@ def get_notifier_bot_and_chat_id():
         return None, None
 
 
-def send_dev_alert(message: str):
-
-    bot, chat_id = get_notifier_bot_and_chat_id()
-
+def send_dev_alert(message: str, bot: Bot, chat_id: str):
     if bot and chat_id:
         try:
             bot.send_message(chat_id=chat_id, text=message)
@@ -53,4 +43,11 @@ if __name__ == '__main__':
         level=logging.INFO
     )
 
-    send_dev_alert('Тестовое уведомление')
+    env = Env()
+    env.read_env()
+    token = env.str('BOT_TOKEN')
+    chat_id = env.str('DEVELOPER_CHAT_ID', None)
+
+    notifier_bot, developer_chat_id = initialize_bot(token, chat_id)
+
+    send_dev_alert('Тестовое уведомление', notifier_bot, developer_chat_id)
