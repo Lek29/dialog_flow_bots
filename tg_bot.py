@@ -1,15 +1,14 @@
-import os
 import logging
+import os
 from functools import partial
 
 from environs import Env
-from telegram import Update, Bot
+from telegram import Bot, Update
 from telegram.ext import (CallbackContext, CommandHandler, Filters,
                           MessageHandler, Updater)
 
 from dialogflow_utils import detect_intent_texts
 from telegram_notifier import send_dev_alert
-
 
 logger = logging.getLogger(__name__)
 

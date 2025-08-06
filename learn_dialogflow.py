@@ -4,17 +4,6 @@ import os
 from environs import Env
 from google.cloud import dialogflow_v2 as dialogflow
 
-env = Env()
-env.read_env()
-
-PROJECT_ID = env.str('PROJECT_ID')
-
-credentials_file_name = env.str('GOOGLE_APPLICATION_CREDENTIALS')
-credentials_path = os.path.join(os.getcwd(), credentials_file_name)
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
-
-PARENT_PATH = dialogflow.AgentsClient.agent_path(PROJECT_ID)
-
 
 def create_intent(project_id, display_name, training_phrases_parts, message_texts):
     """Создает новый интент (намерение) в Dialogflow.
@@ -34,6 +23,14 @@ def create_intent(project_id, display_name, training_phrases_parts, message_text
             None: Функция ничего не возвращает, но выводит информацию о создании
                 или ошибке в консоль.
     """
+    env = Env()
+    env.read_env()
+    credentials_file_name = env.str('GOOGLE_APPLICATION_CREDENTIALS')
+    credentials_path = os.path.join(os.getcwd(), credentials_file_name)
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
+
+    PARENT_PATH = dialogflow.AgentsClient.agent_path(project_id)
+
     intents_client = dialogflow.IntentsClient()
 
     training_phrases = []
@@ -68,6 +65,10 @@ def main():
            Ожидает наличие файла 'questions.json' в корневой директории
            и корректно настроенных переменных окружения (.env).
         """
+    env = Env()
+    env.read_env()
+    project_id = env.str('PROJECT_ID')
+
     try:
         with open('questions.json', 'r', encoding='utf-8') as f:
             questions_data = json.load(f)
@@ -84,7 +85,7 @@ def main():
         try:
             print(f"\nСоздаем интент: '{intent_name}'")
             create_intent(
-                PROJECT_ID,
+                project_id,
                 intent_name,
                 data['questions'],
                 [data['answer']]
