@@ -1,6 +1,8 @@
 import logging
+import os
 import random
 
+import telegram
 import vk_api
 from environs import Env
 from vk_api.longpoll import VkEventType, VkLongPoll
@@ -11,7 +13,7 @@ from telegram_notifier import send_dev_alert
 logger = logging.getLogger(__name__)
 
 
-def send_vk_message(vk_api_instance, user_id, message_text):
+def send_vk_message(vk_api_instance, user_id, message_text, notifier_settings):
     try:
         vk_api_instance.messages.send(
             user_id=user_id,
@@ -21,27 +23,50 @@ def send_vk_message(vk_api_instance, user_id, message_text):
         logger.info(f'VK-бот: Отправлен ответ пользователю {user_id}: {message_text[:50]}...')
     except vk_api.exceptions.ApiError as e:
         logger.error(f'VK-бот: Ошибка VK API при отправке сообщения: {e}', exc_info=True)
-        send_dev_alert(f'VK-бот: Ошибка VK API при отправке!\n\n```\n{e}\n```')
+        send_dev_alert(
+            f'VK-бот: Ошибка VK API при отправке!\n\n```\n{e}\n```',
+            notifier_settings['bot'],
+            notifier_settings['chat_id']
+        )
     except Exception as e:
         logger.error(f'VK-бот: Неожиданная ошибка при отправке сообщения: {e}', exc_info=True)
-        send_dev_alert(f'VK-бот: Неожиданная ошибка при отправке!\n\n```\n{e}\n```')
+        send_dev_alert(
+            f'VK-бот: Неожиданная ошибка при отправке!\n\n```\n{e}\n```',
+            notifier_settings['bot'],
+            notifier_settings['chat_id']
+        )
 
 
 def run_vk_bot():
     env = Env()
     env.read_env()
 
-    VK_TOKEN = env.str('VK_TOKEN')
+    vk_token = env.str('VK_TOKEN')
+    project_id = env.str('PROJECT_ID')
+    credentials_file_name = env.str('GOOGLE_APPLICATION_CREDENTIALS')
+    developer_chat_id = env.str('DEVELOPER_CHAT_ID')
+    telegram_token = env.str('BOT_TOKEN')
 
-    if not VK_TOKEN:
-        logger.error('Ошибка: VK_TOKEN не найден. Убедитесь, что он указан в .env файле.')
-        send_dev_alert('VK-бот: VK_TOKEN не найден. Бот не запущен.')
+    try:
+        notifier_bot = telegram.Bot(token=telegram_token)
+        notifier_settings = {'bot': notifier_bot, 'chat_id': developer_chat_id}
+    except Exception as e:
+        logger.error(f"Ошибка при создании Notifier Bot для VK: {e}")
         return
+
+    if not vk_token:
+        logger.error('Ошибка: VK_TOKEN не найден. Убедитесь, что он указан в .env файле.')
+        send_dev_alert('VK-бот: VK_TOKEN не найден. Бот не запущен.',
+                       notifier_settings['bot'], notifier_settings['chat_id'])
+        return
+
+    credentials_path = os.path.join(os.getcwd(), credentials_file_name)
+    dialogflow_settings = {'project_id': project_id, 'credentials_path': credentials_path}
 
     logger.info('VK-бот: Токен загружен. Запуск бота...')
 
     try:
-        vk_session = vk_api.VkApi(token=VK_TOKEN)
+        vk_session = vk_api.VkApi(token=vk_token)
         vk_api_instance = vk_session.get_api()
         longpoll = VkLongPoll(vk_session)
 
@@ -59,7 +84,13 @@ def run_vk_bot():
             dialogflow_response_text = 'Извините, я не понял ваш запрос. Пожалуйста, попробуйте еще раз.'
 
             try:
-                query_result = detect_intent_texts(f'vk-{user_id}', user_text, 'ru')
+                query_result = detect_intent_texts(
+                    dialogflow_settings['project_id'],
+                    dialogflow_settings['credentials_path'],
+                    f'vk-{user_id}',
+                    user_text,
+        'ru'
+                )
 
                 if not query_result:
                     logger.warning(f'VK-бот: Dialogflow не вернул результат для {user_id}: {user_text}')
@@ -78,21 +109,40 @@ def run_vk_bot():
             except Exception as e:
                 logger.critical(f'VK-бот: Ошибка Dialogflow или обработки сообщения для {user_id}: {e}', exc_info=True)
                 send_dev_alert(
-                    f'VK-бот: Критическая ошибка Dialogflow!\n\nОт пользователя {user_id}: "{user_text}"\n\n```\n{e}\n```')
+                    f'VK-бот: Критическая ошибка Dialogflow!\n\nОт пользователя {user_id}: "{user_text}"\n\n```\n{e}\n```',
+                    notifier_settings['bot'],
+                    notifier_settings['chat_id']
+                )
                 dialogflow_response_text = 'Извините, произошла внутренняя ошибка при обработке вашего запроса.'
 
-            send_vk_message(vk_api_instance, user_id, dialogflow_response_text)
+            send_vk_message(
+                vk_api_instance,
+                user_id,
+                dialogflow_response_text,
+                notifier_settings)
 
     except Exception as e:
         logger.error(f'VK-бот: Критическая ошибка в цикле прослушивания событий: {e}', exc_info=True)
-        send_dev_alert(f'VK-бот: Критическая ошибка в цикле прослушивания!\nОшибка: {e}')
+        send_dev_alert(
+            f'VK-бот: Критическая ошибка в цикле прослушивания!\nОшибка: {e}',
+            notifier_settings['bot'],
+            notifier_settings['chat_id']
+        )
 
     except vk_api.exceptions.ApiError as e:
         logger.critical(f'VK-бот: Критическая ошибка VK API (Long Poll): {e}', exc_info=True)
-        send_dev_alert(f'VK-бот: Критическая ошибка VK API при инициализации/Long Poll!\n\n```\n{e}\n```')
+        send_dev_alert(
+            f'VK-бот: Критическая ошибка VK API при инициализации/Long Poll!\n\n```\n{e}\n```',
+            notifier_settings['bot'],
+            notifier_settings['chat_id']
+        )
     except Exception as e:
         logger.critical(f'VK-бот: Неожиданная ошибка при запуске VK-бота: {e}', exc_info=True)
-        send_dev_alert(f'VK-бот: Неожиданная критическая ошибка при запуске!\n\n```\n{e}\n```')
+        send_dev_alert(
+            f'VK-бот: Неожиданная критическая ошибка при запуске!\n\n```\n{e}\n```',
+            notifier_settings['bot'],
+            notifier_settings['chat_id']
+        )
 
 
 if __name__ == '__main__':

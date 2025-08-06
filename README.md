@@ -85,6 +85,9 @@ TELEGRAM_DEV_ALERT_CHAT_ID=ID_ЧАТА_ДЛЯ_ОПОВЕЩЕНИЙ
 ### Запустите ботов:
 
 ```bash
-python main.py
+python tg_bot.py
+```
+```bash
+python vk_bot.py
 ```
 (Остановка: Ctrl+C)
