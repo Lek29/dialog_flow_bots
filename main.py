@@ -1,7 +1,5 @@
 import logging
-import sys
 import threading
-import traceback
 
 from telegram_notifier import send_dev_alert
 from tg_bot import run_tg_bot
@@ -15,14 +13,6 @@ def main():
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         level=logging.INFO
     )
-
-    sys.excepthook = lambda exc_type, exc_value, exc_traceback: (
-        lambda error_msg: (
-            logger.critical(f'Критическая ошибка: {error_msg}'),
-            send_dev_alert(f'**ОШИБКА БОТА!** \n\n```python\n{error_msg}\n```'),
-            sys.__excepthook__(exc_type, exc_value, exc_traceback)
-        )
-    )(''.join(traceback.format_exception(exc_type, exc_value, exc_traceback)))
 
     logger.info('Запуск ботов...')
     telegram_thread = threading.Thread(target=run_tg_bot, daemon=True)

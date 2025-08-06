@@ -30,7 +30,6 @@ def handle_message(update: Update, context: CallbackContext, dialogflow_settings
     project_id = dialogflow_settings['project_id']
     credentials_path = dialogflow_settings['credentials_path']
 
-
     try:
         query_result = detect_intent_texts(project_id, credentials_path, f'tg-{user_id}', user_text, 'ru')
 
@@ -82,7 +81,7 @@ def run_tg_bot():
         notifier_bot = Bot(token=telegram_token)
         notifier_settings = {'bot': notifier_bot, 'chat_id': developer_chat_id}
     except Exception as e:
-        logger.error(f"Ошибка при создании Notifier Bot: {e}")
+        logger.error(f'Ошибка при создании Notifier Bot: {e}')
         return
 
     credentials_path = os.path.join(os.getcwd(), credentials_file_name)
