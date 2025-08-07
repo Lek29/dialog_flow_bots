@@ -5,7 +5,7 @@ from environs import Env
 from google.cloud import dialogflow_v2 as dialogflow
 
 
-def create_intent(project_id, display_name, training_phrases_parts, message_texts):
+def create_intent(project_id, display_name, training_phrases_parts, message_texts, credentials_path):
     """Создает новый интент (намерение) в Dialogflow.
 
         Этот интент будет содержать указанные тренировочные фразы и текстовые ответы.
@@ -23,10 +23,7 @@ def create_intent(project_id, display_name, training_phrases_parts, message_text
             None: Функция ничего не возвращает, но выводит информацию о создании
                 или ошибке в консоль.
     """
-    env = Env()
-    env.read_env()
-    credentials_file_name = env.str('GOOGLE_APPLICATION_CREDENTIALS')
-    credentials_path = os.path.join(os.getcwd(), credentials_file_name)
+
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
 
     PARENT_PATH = dialogflow.AgentsClient.agent_path(project_id)
@@ -58,16 +55,13 @@ def create_intent(project_id, display_name, training_phrases_parts, message_text
 
 def main():
     """Основная точка входа для создания интентов Dialogflow из файла JSON.
+    """
 
-           Загружает вопросы и ответы из 'questions.json' и использует их для
-           создания или обновления интентов в указанном проекте Dialogflow.
-
-           Ожидает наличие файла 'questions.json' в корневой директории
-           и корректно настроенных переменных окружения (.env).
-        """
     env = Env()
     env.read_env()
     project_id = env.str('PROJECT_ID')
+    credentials_file_name = env.str('GOOGLE_APPLICATION_CREDENTIALS')
+    credentials_path = os.path.join(os.getcwd(), credentials_file_name)
 
     try:
         with open('questions.json', 'r', encoding='utf-8') as f:
@@ -88,7 +82,8 @@ def main():
                 project_id,
                 intent_name,
                 data['questions'],
-                [data['answer']]
+                [data['answer']],
+                credentials_path
             )
         except Exception as e:
             print(f'Ошибка при создании интента "{intent_name}": {e}')
